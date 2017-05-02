@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <script th:src="@{js/sockjs.min.js}"></script>
+    <script th:src="@{js/stomp.js}"></script>
+    <script th:src="@{js/jquery-3.1.1.js}"></script>
+    <title>Insert title here</title>
+</head>
+<body>
+<h1>this is websocket</h1>
+<div>
+    <div>
+        <button id="connect" onclick="connect();">Connect</button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+    </div>
+    <div id="conversationDiv">
+        <p>
+            <label>notice content?</label>
+        </p>
+        <p>
+            <textarea id="name" rows="5"></textarea>
+        </p>
+        <button id="sendName" onclick="sendName();">Send</button>
+        <p id="response"></p>
+    </div>
+
+    <div id="">
+        <h4>聊天区域</h4>
+        <div id="chat-center" style="height: 100px;width: 100%;overflow: auto;">
+        </div>
+    </div>
+</div>
+
+<script>
+    var stompClient = null;
+    function setConnected(connected) {
+        document.getElementById('connect').disabled = connected;
+        document.getElementById('disconnect').disabled = !connected;
+        document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+        document.getElementById('response').innerHTML = '';
+    }
+    // 开启socket连接
+    function connect() {
+        var socket = new SockJS('/socket');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            setConnected(true);
+            showMsg();
+        });
+    }
+    // 断开socket连接
+    function disconnect() {
+        if (stompClient != null) {
+            stompClient.disconnect();
+        }
+        setConnected(false);
+        console.log("Disconnected");
+    }
+    // 向‘/app/change-notice’服务端发送消息
+    function sendName() {
+        var value = document.getElementById('name').value;
+        stompClient.send("/app/change-notice", {}, value);
+    }
+    //数据显示
+    function showMsg() {
+        stompClient.subscribe('/topic/notice', function (data) {
+            console.log(data);
+            $('#chat-center').append(data.body+'<hr></hr>');
+        });
+    }
+    connect();
+</script>
+</body>
+</html>
