@@ -23,16 +23,23 @@
     });
     var sock = new SockJS("/endpointChat");
     var stomp = Stomp.over(sock);
-//  连接服务端，成功后注册监听，注册地址为/user/queue/notifications比WebSocket配置文件中的多了一个/user，这个/user是必不可少的，使用了它消息才会点对点传送。
+    /**
+     * 连接服务端，成功后注册监听，注册地址为/user/queue/notifications
+     * 监听地址比WebSocket配置文件中的多了一个/user，这个/user是必不可少的，使用了它消息才会点对点传送。
+     */
+
     stomp.connect('guest','guest',function (frame) {
         stomp.subscribe("/user/queue/notifications", handleNotification);
     });
-
-//  收到消息后在handleNotification方法中处理
     function handleNotification(message) {
         $("#output").append("<b>Received： "+message.body+"</b><br/>")
     }
-//  消息转发，对应相关controller中的MessageMapping("/chat1")
+    /**
+     * 消息转发，对应相关controller中的MessageMapping("/chat1")
+     * 增加的“/app”源于WebSocketConfig中配置的结果
+     * @param text
+     */
+
     function sendSpittle(text) {
         stomp.send("/app/chat1", {}, text);
     }

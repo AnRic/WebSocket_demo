@@ -32,18 +32,26 @@
     }
     //点击连接按钮后执行
     function connect() {
-        var socket = new SockJS('/endpointSang');    //指明连接的节点
-        stompClient = Stomp.over(socket);              //利用Stomp协议创建socket客户端
-        stompClient.connect({}, function (frame) {     //调用stompClient中的connect方法来连接服务端，连接成功之后调用setConnected方法，该隐藏的隐藏，该显示的显示
+        //指明连接的节点，节点在WebSocKetConfig中配置
+        var socket = new SockJS('/endpointSang');
+        //利用Stomp协议创建socket客户端
+        stompClient = Stomp.over(socket);
+        /**
+         * 调用stompClient中的connect方法来连接服务端，
+         * 连接成功之后调用setConnected方法，该隐藏的隐藏，该显示的显示
+         */
+        stompClient.connect({}, function (frame) {
             setConnected(true);
             console.log('Connected:' + frame);
-            stompClient.subscribe('/topic/getResponse', function (response) {       //调用stompClient中的subscribe方法来订阅/topic/getResponse发送来的消息
+            //调用stompClient中的subscribe方法来订阅/topic/getResponse发送来的消息
+            stompClient.subscribe('/topic/getResponse', function (response) {
                 showResponse(JSON.parse(response.body).responseMessage);
             })
         });
     }
     function disconnect() {
         if (stompClient != null) {
+            //断开连接
             stompClient.disconnect();
         }
         setConnected(false);
@@ -52,8 +60,13 @@
     function sendName() {
         var name = $('#name').val();
         console.log('name:' + name);
-        stompClient.send("/app/welcome", {}, JSON.stringify({'name': name}));    //发送一条消息到服务端
+        /**
+         * 发送一条消息到服务端，"/app/welcome"由WebSocketConfig中配置的“/app"
+         * 和控制器中对应的MessageMapping("welcome")
+         */
+        stompClient.send("/app/welcome", {}, JSON.stringify({'name': name}));
     }
+    //显示消息
     function showResponse(message) {
         $("#response").html(message);
     }

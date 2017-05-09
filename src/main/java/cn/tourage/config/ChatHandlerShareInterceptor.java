@@ -1,8 +1,6 @@
 package cn.tourage.config;
 
-/**
- * websocket拦截器配置，读取session.
- */
+
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -14,7 +12,9 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
-
+/**
+ * websocket拦截器配置，读取session.
+ */
 public class ChatHandlerShareInterceptor extends HttpSessionHandshakeInterceptor {
 
     private static Logger logger = LoggerFactory.getLogger(ChatHandlerShareInterceptor.class);

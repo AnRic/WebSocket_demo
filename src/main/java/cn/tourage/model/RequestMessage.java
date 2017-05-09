@@ -3,7 +3,7 @@ package cn.tourage.model;
 /**
  * 接收来自浏览器的消息
  */
-public class RequestMessage {
+public class  RequestMessage {
 
     private String name;
 
